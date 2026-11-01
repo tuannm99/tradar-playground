@@ -6,9 +6,13 @@ import (
 	"github.com/ClickHouse/clickhouse-go/v2"
 )
 
-// play_events sắp theo (user_id, ts); play_events_by_ts là cùng dữ liệu nhưng
-// sắp theo (ts) để so sánh ảnh hưởng của khoá ORDER BY (clickhouse.md §2).
+// play_events is sorted by (user_id, ts); play_events_by_ts holds the same data
+// sorted by (ts), to compare the effect of the ORDER BY key (chapter 3.2).
 var clickhouseSteps = []string{
+	// Objects created by chapter exercises, so a re-seed returns to a clean state.
+	`drop view if exists play_daily_mv`,
+	`drop table if exists play_daily`,
+	`drop table if exists play_tiny`,
 	`drop table if exists play_events`,
 	`drop table if exists play_events_by_ts`,
 	`drop table if exists play_users`,
@@ -22,7 +26,7 @@ var clickhouseSteps = []string{
 	) engine = MergeTree
 	partition by toYYYYMM(ts)
 	order by (user_id, ts)`,
-	// 3 triệu sự kiện, 100k user, rải ~180 ngày gần đây.
+	// 3 million events, 100k users, spread over the last ~180 days.
 	`insert into play_events
 	 select
 	   now() - toIntervalSecond(rand() % (180 * 86400)),

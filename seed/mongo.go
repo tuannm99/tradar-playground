@@ -24,8 +24,8 @@ var (
 	statuses  = []string{"new", "paid", "shipped", "cancelled"}
 )
 
-// Database `playground`: play_customers (10k) và play_orders (300k, mỗi đơn có
-// mảng `items` nhúng). Chỉ có index `_id` — mongo.md tự thêm phần còn lại.
+// Database `playground`: play_customers (10k) and play_orders (300k, each order
+// embeds an `items` array). Only the `_id` index exists; chapter 4.2 adds the rest.
 func seedMongo(ctx context.Context, uri string) error {
 	client, err := mongo.Connect(options.Client().ApplyURI(uri))
 	if err != nil {
@@ -34,7 +34,7 @@ func seedMongo(ctx context.Context, uri string) error {
 	defer client.Disconnect(ctx)
 
 	db := client.Database(mongoDB)
-	for _, c := range []string{"play_orders", "play_customers"} {
+	for _, c := range []string{"play_orders", "play_customers", "play_ttl"} {
 		if err := db.Collection(c).Drop(ctx); err != nil {
 			return err
 		}

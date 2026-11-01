@@ -1,10 +1,10 @@
-// Seed dữ liệu mẫu cho playground/*.md: Postgres, ClickHouse, MongoDB.
+// Seed sample data for the handbook chapters: PostgreSQL, ClickHouse, MongoDB.
 //
-//	go run . [postgres] [clickhouse] [mongo]     (không đối số = cả ba)
+//	go run . [postgres] [clickhouse] [mongo]     (no arguments = all three)
 //
-// Mỗi lần chạy xoá rồi tạo lại bảng/collection `play_*` nên chạy lại được.
-// Địa chỉ lấy từ cờ hoặc biến môi trường (xem mặc định bên dưới); các container
-// thử nhanh nằm ở README.md cùng thư mục.
+// Every run drops and recreates the `play_*` tables/collections, so it is
+// repeatable. Addresses come from flags or environment variables (defaults below);
+// see ../README.md for quick Docker containers.
 package main
 
 import (
@@ -23,9 +23,9 @@ func env(key, def string) string {
 }
 
 func main() {
-	pg := flag.String("pg", env("PLAY_PG", "postgres://postgres:x@localhost:5432/postgres"), "DSN Postgres ($PLAY_PG)")
-	ch := flag.String("ch", env("PLAY_CH", "clickhouse://default@localhost:9000/default"), "DSN ClickHouse, cổng native ($PLAY_CH)")
-	mg := flag.String("mongo", env("PLAY_MONGO", "mongodb://localhost:27017"), "URI MongoDB ($PLAY_MONGO)")
+	pg := flag.String("pg", env("PLAY_PG", "postgres://postgres:x@localhost:5432/postgres"), "PostgreSQL DSN ($PLAY_PG)")
+	ch := flag.String("ch", env("PLAY_CH", "clickhouse://default@localhost:9000/default"), "ClickHouse DSN, native port ($PLAY_CH)")
+	mg := flag.String("mongo", env("PLAY_MONGO", "mongodb://localhost:27017"), "MongoDB URI ($PLAY_MONGO)")
 	flag.Parse()
 
 	seeders := map[string]func(context.Context, string) error{
@@ -44,17 +44,17 @@ func main() {
 	for _, t := range targets {
 		fn, ok := seeders[t]
 		if !ok {
-			fmt.Fprintf(os.Stderr, "không biết đích %q (postgres | clickhouse | mongo)\n", t)
+			fmt.Fprintf(os.Stderr, "unknown target %q (postgres | clickhouse | mongo)\n", t)
 			os.Exit(2)
 		}
 		start := time.Now()
 		fmt.Printf("%-10s ... ", t)
 		if err := fn(ctx, addrs[t]); err != nil {
-			fmt.Printf("LỖI: %v\n", err)
+			fmt.Printf("ERROR: %v\n", err)
 			failed = true
 			continue
 		}
-		fmt.Printf("xong (%s)\n", time.Since(start).Round(time.Millisecond))
+		fmt.Printf("done (%s)\n", time.Since(start).Round(time.Millisecond))
 	}
 	if failed {
 		os.Exit(1)

@@ -1,0 +1,8 @@
+
+
+```postgres
+
+SELECT * FROM users;
+
+
+```

@@ -6,9 +6,11 @@ import (
 	"github.com/jackc/pgx/v5"
 )
 
-// Bảng: play_customers (10k) và play_orders (500k, chỉ có khoá chính — các bài
-// tập trong postgres.md tự thêm index).
+// Tables: play_customers (10k) and play_orders (500k, primary key only; the
+// chapters add the other indexes themselves).
 var postgresSteps = []string{
+	// Objects created by chapter exercises, so a re-seed returns to a clean state.
+	`drop table if exists play_log, play_corr, play_part, play_child, play_parent, play_oncall, play_hot, play_nohot cascade`,
 	`drop table if exists play_orders`,
 	`drop table if exists play_customers`,
 	`create table play_customers (
@@ -26,7 +28,7 @@ var postgresSteps = []string{
 		amount      numeric(10,2) not null,
 		created_at  timestamptz not null
 	)`,
-	// customer_id và status phân bố đều, created_at rải trong 365 ngày.
+	// customer_id and status are uniformly distributed; created_at spans 365 days.
 	`insert into play_orders (customer_id, status, amount, created_at)
 	 select 1 + floor(random() * 10000)::int,
 	        (array['new','paid','shipped','cancelled'])[1 + floor(random() * 4)::int],

@@ -1,0 +1,21 @@
+# tradar connections for the handbook (matches docker-compose.yml).
+#
+# tradar resolves the alias after the dialect in every code fence (```sql pg-local) through its
+# connections.toml, and there is no per-project connections file nor an inline connection string
+# for SQL/Mongo/ClickHouse fences. So these three entries have to exist once in your own
+# connections.toml (open it with :TradarConnections in Neovim, paste, save). Nothing else is needed.
+
+[[connections]]
+name = "pg-local"
+driver = "postgres"
+target = "postgres://postgres:x@localhost:5432/postgres"
+
+[[connections]]
+name = "ch-local"
+driver = "clickhouse"
+target = "http://default@127.0.0.1:8123/default"   # HTTP port 8123, not the native 9000
+
+[[connections]]
+name = "mongo-local"
+driver = "mongo"
+target = "mongodb://localhost:27017/playground"

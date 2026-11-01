@@ -1,0 +1,106 @@
+# The three databases used by the handbook, ready to seed.
+#
+#   docker compose up -d --wait          start everything and wait until healthy
+#   docker compose run --rm seed         load the sample data (or: cd seed && go run .)
+#   docker compose down                  stop, keep data      (add -v to delete the data)
+#
+# Ports: PostgreSQL 5432, ClickHouse 8123 (HTTP, used by tradar) and 9000 (native, used by the seed),
+# MongoDB 27017. Change the left side of a mapping if a port is taken.
+
+name: tradar-playground
+services:
+  postgres:
+    image: postgres:16
+    container_name: play-pg
+    environment:
+      POSTGRES_PASSWORD: x
+    # pg_stat_statements for chapter 2.6; log_lock_waits and a 1 s deadlock_timeout for chapter 2.4.
+    command:
+      - postgres
+      - -c
+      - shared_preload_libraries=pg_stat_statements
+      - -c
+      - log_lock_waits=on
+      - -c
+      - deadlock_timeout=1s
+    ports:
+      - '5432:5432'
+    volumes:
+      - pg-data:/var/lib/postgresql/data
+      - ./compose/postgres-init.sql:/docker-entrypoint-initdb.d/10-extensions.sql:ro
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U postgres']
+      interval: 3s
+      timeout: 3s
+      retries: 20
+
+  clickhouse:
+    image: clickhouse/clickhouse-server:latest
+    container_name: play-ch
+    environment:
+      # Recent images refuse the passwordless `default` user from outside the container otherwise.
+      CLICKHOUSE_SKIP_USER_SETUP: '1'
+    ports:
+      - '8123:8123'
+      - '9000:9000'
+    ulimits:
+      nofile:
+        soft: 262144
+        hard: 262144
+    volumes:
+      - ch-data:/var/lib/clickhouse
+    healthcheck:
+      test: ['CMD-SHELL', "clickhouse-client -q 'select 1' >/dev/null"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+
+  mongo:
+    image: mongo:8
+    container_name: play-mongo
+    # A one-node replica set, so transactions (chapter 4.4) work.
+    command: ['mongod', '--replSet', 'rs0', '--bind_ip_all']
+    ports:
+      - '27017:27017'
+    volumes:
+      - mongo-data:/data/db
+    healthcheck:
+      # Initiates the replica set on first run, then reports healthy once a primary exists.
+      test:
+        - CMD-SHELL
+        - >-
+          mongosh --quiet --eval
+          "try { if (rs.status().ok) quit(0) } catch (e) { rs.initiate({_id: 'rs0', members: [{_id: 0, host: 'localhost:27017'}]}); quit(1) }"
+      interval: 3s
+      timeout: 5s
+      retries: 30
+      start_period: 5s
+
+  # One-shot job: `docker compose run --rm seed [postgres] [clickhouse] [mongo]`
+  seed:
+    image: golang:1.26
+    profiles: ['seed']
+    working_dir: /src
+    volumes:
+      - ./seed:/src
+      - go-cache:/go
+    environment:
+      PLAY_PG: postgres://postgres:x@postgres:5432/postgres
+      PLAY_CH: clickhouse://default@clickhouse:9000/default
+      # The replica set advertises itself as localhost:27017 (right for host clients), which is wrong
+      # from inside this container, so skip topology discovery.
+      PLAY_MONGO: mongodb://mongo:27017/?directConnection=true
+    command: ['go', 'run', '.']
+    depends_on:
+      postgres:
+        condition: service_healthy
+      clickhouse:
+        condition: service_healthy
+      mongo:
+        condition: service_healthy
+
+volumes:
+  pg-data:
+  ch-data:
+  mongo-data:
+  go-cache:
