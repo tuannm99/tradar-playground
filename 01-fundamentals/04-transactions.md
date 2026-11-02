@@ -11,7 +11,7 @@
 | **I**solation | concurrent transactions behave as if run in some order, to a degree set by the isolation level | locks, MVCC snapshots, validation |
 | **D**urability | committed changes survive a crash | WAL + fsync, replication |
 
-"Consistency" here is not the same word as in CAP ([5.2](../05-architecture/02-replication-and-consistency.md)). Isolation is the subtle one, because it is a *spectrum*.
+"Consistency" here is not the same word as in CAP ([3.2](../03-architecture/02-replication-and-consistency.md)). Isolation is the subtle one, because it is a *spectrum*.
 
 ## 2. Anomalies
 
@@ -95,7 +95,7 @@ Snapshot isolation plus tracking of read–write dependencies; when a dangerous 
 
 ## Try it (PostgreSQL)
 
-The chapter's anomalies are reproduced step by step, with measured output, in [2.4 Transactions and locking](../02-postgres/04-transactions-and-locking.md). The MongoDB equivalent (snapshot transactions, `WriteConflict`, concerns) is [4.4](../04-mongodb/04-transactions-and-concerns.md); ClickHouse's very different model is [3.4](../03-clickhouse/04-consistency-and-mutations.md).
+The chapter's anomalies are reproduced step by step, with measured output, in [2a.4 Transactions and locking](../02-engines/postgres/04-transactions-and-locking.md). The MongoDB equivalent (snapshot transactions, `WriteConflict`, concerns) is [2c.4](../02-engines/mongodb/04-transactions-and-concerns.md); ClickHouse's very different model is [2b.4](../02-engines/clickhouse/04-consistency-and-mutations.md).
 
 ## Exercises
 

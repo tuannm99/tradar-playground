@@ -25,7 +25,7 @@ var (
 )
 
 // Database `playground`: play_customers (10k) and play_orders (300k, each order
-// embeds an `items` array). Only the `_id` index exists; chapter 4.2 adds the rest.
+// embeds an `items` array). Only the `_id` index exists; chapter 2c.2 adds the rest.
 func seedMongo(ctx context.Context, uri string) error {
 	client, err := mongo.Connect(options.Client().ApplyURI(uri))
 	if err != nil {

@@ -2,7 +2,7 @@
 #
 # tradar resolves the alias after the dialect in every code fence (```sql pg-local) through its
 # connections.toml, and there is no per-project connections file nor an inline connection string
-# for SQL/Mongo/ClickHouse fences. So these three entries have to exist once in your own
+# for SQL/Mongo/ClickHouse fences. So these four entries have to exist once in your own
 # connections.toml (open it with :TradarConnections in Neovim, paste, save). Nothing else is needed.
 
 [[connections]]
@@ -19,3 +19,8 @@ target = "http://default@127.0.0.1:8123/default"   # HTTP port 8123, not the nat
 name = "mongo-local"
 driver = "mongo"
 target = "mongodb://localhost:27017/playground"
+
+[[connections]]
+name = "es-local"
+driver = "elasticsearch"
+target = "http://localhost:9200"

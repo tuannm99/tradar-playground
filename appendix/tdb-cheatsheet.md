@@ -1,6 +1,6 @@
-# `.tdb` cheatsheet: observability queries for the three databases
+# `.tdb` cheatsheet: observability queries for the four databases
 
-Paste into a `.tdb` file in Neovim with [tradar](https://github.com/tuannm99/tradar), change the connection alias after the dialect (`pg-local`, `ch-local`, `mongo-local`) and run a block with `rr`. Every query here was run against the seed on PostgreSQL 16, ClickHouse 26.10 and MongoDB 8.3 unless marked *(needs setup)*.
+Paste into a `.tdb` file in Neovim with [tradar](https://github.com/tuannm99/tradar), change the connection alias after the dialect (`pg-local`, `ch-local`, `mongo-local`, `es-local`) and run a block with `rr`. Every query here was run against the seed on PostgreSQL 16, ClickHouse 26.10 and MongoDB 8.3 unless marked *(needs setup)*.
 
 ## PostgreSQL
 
@@ -158,4 +158,38 @@ db.adminCommand({replSetGetStatus: 1})
 
 ```js mongo-local
 db.adminCommand({getDefaultRWConcern: 1})
+```
+
+## Elasticsearch
+
+```esq es-local
+GET /_cluster/health
+```
+
+```esq es-local
+GET /_cat/indices?v&s=store.size:desc&h=index,health,pri,rep,docs.count,docs.deleted,store.size
+```
+
+```esq es-local
+GET /_cat/shards?v&s=store:desc
+```
+
+```esq es-local
+GET /_nodes/stats/jvm,indices,thread_pool
+```
+
+```esq es-local
+GET /_cat/segments/play_*?v&h=index,segment,docs.count,size
+```
+
+```esq es-local
+GET /_cluster/allocation/explain
+```
+
+```esq es-local
+GET /_nodes/hot_threads
+```
+
+```esq es-local
+POST /play_products/_disk_usage?run_expensive_tasks=true
 ```

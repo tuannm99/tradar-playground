@@ -64,7 +64,7 @@ page 1: [id1 name1 amt1 ts1]          file id:   [id1 id2 id3 ...]
 | Typical engines | PostgreSQL, MySQL, MongoDB (document = row) | ClickHouse, Parquet-based systems |
 | Workload | OLTP: many small reads and writes | OLAP: few huge scans and aggregates |
 
-The choice is not a quality ranking; it is a trade of point-access speed against scan speed. See [5.1 OLTP vs OLAP](../05-architecture/01-oltp-vs-olap.md).
+The choice is not a quality ranking; it is a trade of point-access speed against scan speed. See [3.1 OLTP vs OLAP](../03-architecture/01-oltp-vs-olap.md).
 
 ## 5. How rows are organised
 
@@ -105,7 +105,7 @@ Rules of thumb:
 
 - Commit latency ≈ one `fsync`. Many tiny transactions are slow because each pays for it; **group commit** lets concurrent commits share one fsync.
 - Relaxing durability (`synchronous_commit = off` in PostgreSQL, `w:1` / no journal in MongoDB) can lose the last moments of data on a crash but **does not corrupt** the database.
-- Replicas are fed from the same log, which is why replication lag is measured in log positions (see [5.2](../05-architecture/02-replication-and-consistency.md)).
+- Replicas are fed from the same log, which is why replication lag is measured in log positions (see [3.2](../03-architecture/02-replication-and-consistency.md)).
 
 | Engine | Log | Notes |
 | --- | --- | --- |

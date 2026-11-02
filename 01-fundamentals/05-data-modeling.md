@@ -25,7 +25,7 @@ Guideline: normalise by default in OLTP; denormalise *deliberately*, for a measu
 
 ## 3. Embedding vs referencing (documents)
 
-Embed when the child is **owned by and read with** the parent and its size is bounded (order → line items). Reference when the child is shared, changes independently, or is unbounded (user → millions of events). Embedding gives one read and an atomic single-document write; referencing gives smaller documents and flexibility at the price of a second query or `$lookup`. See [4.1](../04-mongodb/01-storage-wiredtiger.md#1-the-document-model-and-its-limits).
+Embed when the child is **owned by and read with** the parent and its size is bounded (order → line items). Reference when the child is shared, changes independently, or is unbounded (user → millions of events). Embedding gives one read and an atomic single-document write; referencing gives smaller documents and flexibility at the price of a second query or `$lookup`. See [2c.1](../02-engines/mongodb/01-storage-wiredtiger.md#1-the-document-model-and-its-limits).
 
 ## 4. Keys
 
@@ -38,7 +38,7 @@ The primary key determines physical layout in clustered engines and is copied in
 | Time-ordered ids (UUIDv7, ULID, Snowflake, MongoDB ObjectId) | roughly sorted → append-friendly **and** generated anywhere | leak creation time; clock skew |
 | Natural key | meaningful | changes, is wide, hard to rename |
 
-Default: a compact surrogate key, time-ordered if generated outside the database. In ClickHouse the primary key is not unique — it is a **sort key** chosen for pruning ([3.2](../03-clickhouse/02-indexes-and-pruning.md)).
+Default: a compact surrogate key, time-ordered if generated outside the database. In ClickHouse the primary key is not unique — it is a **sort key** chosen for pruning ([2b.2](../02-engines/clickhouse/02-indexes-and-pruning.md)).
 
 ## 5. Data types
 
@@ -51,7 +51,7 @@ Default: a compact surrogate key, time-ordered if generated outside the database
 
 ## 6. Partitioning and clustering data
 
-Splitting a big table by a key (usually time) gives: cheap bulk deletion (`DROP PARTITION`), **partition pruning** for queries that filter on the key, and smaller per-partition indexes. It is **not** a general speed-up: queries without the key touch all partitions, and too many partitions hurt planning and metadata. Details per engine in [2.5](../02-postgres/05-architecture.md), [3.2](../03-clickhouse/02-indexes-and-pruning.md), [5.3](../05-architecture/03-partitioning-and-sharding.md).
+Splitting a big table by a key (usually time) gives: cheap bulk deletion (`DROP PARTITION`), **partition pruning** for queries that filter on the key, and smaller per-partition indexes. It is **not** a general speed-up: queries without the key touch all partitions, and too many partitions hurt planning and metadata. Details per engine in [2a.5](../02-engines/postgres/05-architecture.md), [2b.2](../02-engines/clickhouse/02-indexes-and-pruning.md), [3.3](../03-architecture/03-partitioning-and-sharding.md).
 
 ## 7. Constraints are performance features too
 

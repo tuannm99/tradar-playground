@@ -36,11 +36,11 @@ An index on `(a, b, c)` is sorted by `a`, then `b` within equal `a`, then `c`. T
 
 Design heuristic (the "ESR" rule, popular in MongoDB docs, valid in general): **E**quality columns first, then **S**ort columns, then **R**ange columns. Equality columns narrow to a contiguous slice; sort columns then arrive pre-ordered; the range column goes last because after a range the later columns are no longer sorted within the scan.
 
-It is a guideline, not a law — measured counter-example in [4.2](../04-mongodb/02-indexes.md#esr-is-a-guideline): with a very selective range and no `LIMIT`, skipping the pre-sorted order and sorting a few hundred rows wins.
+It is a guideline, not a law — measured counter-example in [2c.2](../02-engines/mongodb/02-indexes.md#esr-is-a-guideline): with a very selective range and no `LIMIT`, skipping the pre-sorted order and sorting a few hundred rows wins.
 
 ## 4. Covering (index-only) access
 
-If the index contains every column the query needs, the engine answers from the index alone and never touches the table. Variants: a wide composite index, PostgreSQL `INCLUDE (col)`, MongoDB covered queries (projection of only indexed fields, `_id` excluded). It removes the random table access — often the dominant cost — but makes the index bigger. In MVCC systems the engine may still need a visibility check (PostgreSQL visibility map, see [2.1](../02-postgres/01-storage-and-mvcc.md)).
+If the index contains every column the query needs, the engine answers from the index alone and never touches the table. Variants: a wide composite index, PostgreSQL `INCLUDE (col)`, MongoDB covered queries (projection of only indexed fields, `_id` excluded). It removes the random table access — often the dominant cost — but makes the index bigger. In MVCC systems the engine may still need a visibility check (PostgreSQL visibility map, see [2a.1](../02-engines/postgres/01-storage-and-mvcc.md)).
 
 ## 5. Other index shapes
 

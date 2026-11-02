@@ -119,7 +119,7 @@ Measured: the `OFFSET` plan has the index scan produce `rows=400020` and takes ~
 ## Exercises
 
 1. In a plan you see `Nested Loop (actual rows=1 loops=1)` whose inner child is `Seq Scan (loops=50000)`. What is wrong and what are two fixes?
-2. Estimated rows 12, actual rows 1 000 for `a = 5 and b = 5`. Name the cause and the PostgreSQL feature that fixes it (hands-on in [2.3](../02-postgres/03-planner-and-explain.md)).
+2. Estimated rows 12, actual rows 1 000 for `a = 5 and b = 5`. Name the cause and the PostgreSQL feature that fixes it (hands-on in [2a.3](../02-engines/postgres/03-planner-and-explain.md)).
 3. Why can a query with `LIMIT 10` be fast on an indexed sort column yet slow when you change the `ORDER BY` to an unindexed one?
 4. Give two situations where a hash join is better than a nested loop, and one where it is worse.
 

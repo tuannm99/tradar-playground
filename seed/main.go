@@ -1,6 +1,6 @@
-// Seed sample data for the handbook chapters: PostgreSQL, ClickHouse, MongoDB.
+// Seed sample data for the handbook chapters: PostgreSQL, ClickHouse, MongoDB, Elasticsearch.
 //
-//	go run . [postgres] [clickhouse] [mongo]     (no arguments = all three)
+//	go run . [postgres] [clickhouse] [mongo] [elasticsearch]     (no arguments = all four)
 //
 // Every run drops and recreates the `play_*` tables/collections, so it is
 // repeatable. Addresses come from flags or environment variables (defaults below);
@@ -26,25 +26,27 @@ func main() {
 	pg := flag.String("pg", env("PLAY_PG", "postgres://postgres:x@localhost:5432/postgres"), "PostgreSQL DSN ($PLAY_PG)")
 	ch := flag.String("ch", env("PLAY_CH", "clickhouse://default@localhost:9000/default"), "ClickHouse DSN, native port ($PLAY_CH)")
 	mg := flag.String("mongo", env("PLAY_MONGO", "mongodb://localhost:27017"), "MongoDB URI ($PLAY_MONGO)")
+	es := flag.String("es", env("PLAY_ES", "http://localhost:9200"), "Elasticsearch URL ($PLAY_ES)")
 	flag.Parse()
 
 	seeders := map[string]func(context.Context, string) error{
-		"postgres":   seedPostgres,
-		"clickhouse": seedClickHouse,
-		"mongo":      seedMongo,
+		"postgres":      seedPostgres,
+		"clickhouse":    seedClickHouse,
+		"mongo":         seedMongo,
+		"elasticsearch": seedElasticsearch,
 	}
-	addrs := map[string]string{"postgres": *pg, "clickhouse": *ch, "mongo": *mg}
+	addrs := map[string]string{"postgres": *pg, "clickhouse": *ch, "mongo": *mg, "elasticsearch": *es}
 
 	targets := flag.Args()
 	if len(targets) == 0 {
-		targets = []string{"postgres", "clickhouse", "mongo"}
+		targets = []string{"postgres", "clickhouse", "mongo", "elasticsearch"}
 	}
 	ctx := context.Background()
 	failed := false
 	for _, t := range targets {
 		fn, ok := seeders[t]
 		if !ok {
-			fmt.Fprintf(os.Stderr, "unknown target %q (postgres | clickhouse | mongo)\n", t)
+			fmt.Fprintf(os.Stderr, "unknown target %q (postgres | clickhouse | mongo | elasticsearch)\n", t)
 			os.Exit(2)
 		}
 		start := time.Now()

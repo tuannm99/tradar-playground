@@ -2,7 +2,7 @@
 
 > **Level:** fundamentals · **Prerequisites:** none · **After this chapter you can:** find the queries that actually matter, measure latency honestly, and avoid the common benchmarking traps.
 
-Optimisation without measurement is superstition. This chapter is the method; the tool names per engine are in the playbooks ([2.6](../02-postgres/06-tuning-playbook.md), [3.6](../03-clickhouse/06-tuning-playbook.md), [4.6](../04-mongodb/06-tuning-playbook.md)) and the [`.tdb` cheatsheet](../appendix/tdb-cheatsheet.md).
+Optimisation without measurement is superstition. This chapter is the method; the tool names per engine are in the playbooks ([2a.6](../02-engines/postgres/06-tuning-playbook.md), [2b.6](../02-engines/clickhouse/06-tuning-playbook.md), [2c.6](../02-engines/mongodb/06-tuning-playbook.md)) and the [`.tdb` cheatsheet](../appendix/tdb-cheatsheet.md).
 
 ## 1. The method
 
@@ -94,3 +94,5 @@ order by event_time desc limit 3;
 3. Take any query from this handbook and fill in the case-file template.
 
 → Answers: [appendix/solutions.md](../appendix/solutions.md#16-measuring).
+
+Next: [1.7 Query paradigms](07-query-paradigms.md).

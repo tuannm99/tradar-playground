@@ -1,11 +1,11 @@
-# The three databases used by the handbook, ready to seed.
+# The four databases used by the handbook, ready to seed.
 #
 #   docker compose up -d --wait          start everything and wait until healthy
 #   docker compose run --rm seed         load the sample data (or: cd seed && go run .)
 #   docker compose down                  stop, keep data      (add -v to delete the data)
 #
 # Ports: PostgreSQL 5432, ClickHouse 8123 (HTTP, used by tradar) and 9000 (native, used by the seed),
-# MongoDB 27017. Change the left side of a mapping if a port is taken.
+# MongoDB 27017, Elasticsearch 9200. Change the left side of a mapping if a port is taken.
 
 name: tradar-playground
 services:
@@ -14,7 +14,7 @@ services:
     container_name: play-pg
     environment:
       POSTGRES_PASSWORD: x
-    # pg_stat_statements for chapter 2.6; log_lock_waits and a 1 s deadlock_timeout for chapter 2.4.
+    # pg_stat_statements for chapter 2a.6; log_lock_waits and a 1 s deadlock_timeout for chapter 2a.4.
     command:
       - postgres
       - -c
@@ -58,7 +58,7 @@ services:
   mongo:
     image: mongo:8
     container_name: play-mongo
-    # A one-node replica set, so transactions (chapter 4.4) work.
+    # A one-node replica set, so transactions (chapter 2c.4) work.
     command: ['mongod', '--replSet', 'rs0', '--bind_ip_all']
     ports:
       - '27017:27017'
@@ -76,7 +76,25 @@ services:
       retries: 30
       start_period: 5s
 
-  # One-shot job: `docker compose run --rm seed [postgres] [clickhouse] [mongo]`
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.15.3
+    container_name: play-es
+    environment:
+      discovery.type: single-node
+      xpack.security.enabled: 'false'   # local playground only: no TLS, no passwords
+      ES_JAVA_OPTS: -Xms1g -Xmx1g
+    ports:
+      - '${ES_PORT:-9200}:9200'
+    volumes:
+      - es-data:/usr/share/elasticsearch/data
+    healthcheck:
+      test: ['CMD-SHELL', "curl -sf 'localhost:9200/_cluster/health?wait_for_status=yellow&timeout=2s' >/dev/null"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+      start_period: 15s
+
+  # One-shot job: `docker compose run --rm seed [postgres] [clickhouse] [mongo] [elasticsearch]`
   seed:
     image: golang:1.26
     profiles: ['seed']
@@ -90,6 +108,7 @@ services:
       # The replica set advertises itself as localhost:27017 (right for host clients), which is wrong
       # from inside this container, so skip topology discovery.
       PLAY_MONGO: mongodb://mongo:27017/?directConnection=true
+      PLAY_ES: http://elasticsearch:9200
     command: ['go', 'run', '.']
     depends_on:
       postgres:
@@ -98,9 +117,12 @@ services:
         condition: service_healthy
       mongo:
         condition: service_healthy
+      elasticsearch:
+        condition: service_healthy
 
 volumes:
   pg-data:
   ch-data:
   mongo-data:
+  es-data:
   go-cache:
