@@ -1,0 +1,18 @@
+```js els-tradar-playgound
+GET _cat
+
+GET _cat/indices
+GET _cat/shards
+GET _cat/master
+GET _cluster/health
+
+GET play_logs/_search
+{
+  "size": 100,
+  "query": {
+    "match_all": {}
+  }
+}
+
+
+```

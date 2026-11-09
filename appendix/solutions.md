@@ -2,6 +2,12 @@
 
 Short answers: enough to check your reasoning, not to replace running the experiment. Where an exercise says "measure", the expected *shape* of the result is given; exact numbers depend on your machine.
 
+## 1.0 SQL primer
+
+1. `WHERE` is evaluated before `SELECT`, so the alias `x` does not exist yet. Repeat the expression (`where amount * 2 > 10`) or wrap it: `select * from (select amount * 2 as x from play_orders) t where x > 10` (a CTE works the same way).
+2. `select c.* from play_customers c left join play_orders o on o.customer_id = c.id where o.id is null;` or, usually clearer, `where not exists (select 1 from play_orders o where o.customer_id = c.id)`.
+3. `WHERE` filters rows before grouping; `HAVING` filters groups after aggregation. Example: paid orders only (`where status = 'paid'`), customers whose paid total exceeds 1 000 (`having sum(amount) > 1000`).
+
 ## 1.1 Storage
 
 1. 10 M × 200 B = 2 GB ≈ 250 000 pages of 8 KB. Sequential scan at 1 GB/s ≈ **2 s**. 10 M random page reads at 100 µs = **1 000 s** (≈ 500× slower) — which is why scans beat index lookups when you need a large fraction of the table.
@@ -42,6 +48,11 @@ Short answers: enough to check your reasoning, not to replace running the experi
 1. 400 × 0.025 = **10** busy connections. At 100 ms: 40 needed > 20 pool → the queue grows without bound; latency rises; more connections are held — an overload spiral. Fix: shed load, bound queues, speed up queries.
 2. Cold vs warm cache? Same data size and distribution as production? Did the plan really change (is the index used), and what is the write-side cost? Also p95/p99, not one run.
 3. Use the template in [1.6 §7](../01-fundamentals/06-measuring.md#7-a-reusable-case-file-template).
+
+## 1.7 Query paradigms
+
+1. Pipeline: `db.play_orders.aggregate([{$match: {createdAt: {$gte: new Date(Date.now() - 30*864e5)}}}, {$group: {_id: "$status", total: {$sum: "$amount"}}}])`. SQL: `select status, sum(amount) from play_orders where created_at >= now() - interval '30 days' group by status;`.
+2. A `$match` on the **group key** (`_id`) after `$group` keeps or drops whole groups, so it can move before `$group` as a filter on the original field with the same result (and then use an index). A `$match` on an **aggregated value** (`total > 10`) depends on the grouping and cannot move. Neither can one on a field that `$group` does not keep.
 
 ## 2a.1 PostgreSQL storage and MVCC
 
@@ -223,6 +234,13 @@ Short answers: enough to check your reasoning, not to replace running the experi
 2. Example thresholds `0ms` log every query; the profile or `took` tells which is most expensive. The date histogram with percentiles over `play_logs` is typically the slowest (~150 ms), plain term aggregations or `match` queries a few ms.
 3. In `_cat/indices`, a high `docs.deleted` relative to `docs.count` (and store size bigger than expected) signals update/delete-heavy; an append-only index has `docs.deleted` near zero.
 4. With `refresh_interval: 1s` and replicas, each bulk triggers many small segments and double the indexing work, so the load is markedly slower (and may hit 429s). Disabling refresh and replicas during the load and restoring after it is the standard bulk-load recipe.
+
+## 2d.7 Elasticsearch versions
+
+1. **6.x**: writing to a type other than the index's single type fails if the index already has one (new daily indices accept one type); `string` mappings are rejected for new indices (5.x converted them with a warning). **7.x**: typed URLs work with deprecation warnings; `hits.total` becomes an object, so integer parsing breaks (use `rest_total_hits_as_int=true` while migrating). **8.x**: `/{index}/{type}/{id}` returns *no handler found*. Fixes: `_doc` endpoints, `text`/`keyword` mapping, read `hits.total.value`, reindex old indices.
+2. All types of an index lived in one Lucene index: one field name could have only one mapping, and fields of unrelated types left sparse columns in the same segments (worse compression, wasted doc values and norms). "Index = database, type = table" was never true, so removing the illusion was simpler than isolating types.
+3. With `minimum_master_nodes: 1`, both sides of a partition can elect a master (1 node is a "majority"), accept writes independently, and diverge: split brain, data loss when they rejoin. 7.x maintains a voting configuration and requires a majority of it, so only the 2-node side elects a master and the isolated node refuses to act as master.
+4. Reduce shard count first: `_shrink` or reindex small daily indices into weekly/monthly ones or a data stream with rollover by size, and drop dead indices. The upgrade does not change existing indices' shard counts (the 1-shard default applies only to new indices), and 20 000 shards keep costing heap and cluster-state work on any version.
 
 ## 3.1 OLTP vs OLAP
 

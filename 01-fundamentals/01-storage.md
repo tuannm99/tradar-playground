@@ -34,6 +34,7 @@ Databases do not read rows; they read **pages** (blocks): fixed-size chunks of t
 | MySQL InnoDB | page | 16 KB |
 | MongoDB WiredTiger | B-tree page | configurable; leaf pages are tens of KB, compressed on disk |
 | ClickHouse | granule | 8 192 rows per column (default `index_granularity`) |
+| Elasticsearch (Lucene) | segment, read through the OS page cache | immutable files per shard; postings and doc values in compressed blocks |
 
 A page holds many rows. To read one 100-byte row the database reads the whole page, so **locality matters**: rows read together should live together. This is why a column that correlates with physical order (a monotonically increasing timestamp, say) makes range scans cheap, and why a random UUID primary key scatters inserts across the whole index.
 
@@ -80,7 +81,7 @@ Keys are kept sorted in a shallow, wide tree; leaves are linked for range scans.
 
 ### LSM tree
 
-Writes go to an in-memory table and are flushed as immutable sorted files; background **compaction** merges files. Writes are sequential and fast, reads may check several files (mitigated by Bloom filters), and compaction costs extra write I/O later. MergeTree in ClickHouse is LSM-flavoured: immutable sorted parts merged in the background. PostgreSQL and WiredTiger's default B-tree use in-place pages.
+Writes go to an in-memory table and are flushed as immutable sorted files; background **compaction** merges files. Writes are sequential and fast, reads may check several files (mitigated by Bloom filters), and compaction costs extra write I/O later. Lucene (Elasticsearch) works the same way: immutable segments, merged in the background ([2d.1](../02-engines/elasticsearch/01-storage-lucene.md)). MergeTree in ClickHouse is LSM-flavoured: immutable sorted parts merged in the background. PostgreSQL and WiredTiger's default B-tree use in-place pages.
 
 ### Amplification
 
@@ -111,6 +112,7 @@ Rules of thumb:
 | --- | --- | --- |
 | PostgreSQL | WAL | page images + deltas; checkpoints every `checkpoint_timeout` or `max_wal_size` |
 | MongoDB (WiredTiger) | journal + oplog | journal for local crash recovery; oplog (a collection) for replication |
+| Elasticsearch | translog | per shard; fsync before acknowledging by default; segments are committed later by a flush |
 | ClickHouse | none for the data path in the classic sense | an insert writes a complete new immutable part and commits it atomically; durability then depends on fsync settings and replication |
 
 ## 8. Compression and encoding

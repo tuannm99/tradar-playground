@@ -1,0 +1,8 @@
+
+```js mongo
+show dbs;
+show collections;
+
+use <db>
+
+```

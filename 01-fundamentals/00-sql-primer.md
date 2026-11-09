@@ -99,4 +99,6 @@ A CTE is for readability. In PostgreSQL 12+ a non-recursive, single-use CTE is i
 2. Rewrite the `LEFT JOIN` above to list only customers with **no** orders.
 3. What is the difference between `WHERE` and `HAVING`? Give a query that needs both.
 
+→ Answers: [appendix/solutions.md](../appendix/solutions.md#10-sql-primer).
+
 Next: [1.1 Storage](01-storage.md).

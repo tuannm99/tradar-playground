@@ -2,7 +2,7 @@
 
 > **Level:** fundamentals · **Prerequisites:** none · **After this chapter you can:** find the queries that actually matter, measure latency honestly, and avoid the common benchmarking traps.
 
-Optimisation without measurement is superstition. This chapter is the method; the tool names per engine are in the playbooks ([2a.6](../02-engines/postgres/06-tuning-playbook.md), [2b.6](../02-engines/clickhouse/06-tuning-playbook.md), [2c.6](../02-engines/mongodb/06-tuning-playbook.md)) and the [`.tdb` cheatsheet](../appendix/tdb-cheatsheet.md).
+Optimisation without measurement is superstition. This chapter is the method; the tool names per engine are in the playbooks ([2a.6](../02-engines/postgres/06-tuning-playbook.md), [2b.6](../02-engines/clickhouse/06-tuning-playbook.md), [2c.6](../02-engines/mongodb/06-tuning-playbook.md), [2d.6](../02-engines/elasticsearch/06-tuning-playbook.md)) and the [`.tdb` cheatsheet](../appendix/tdb-cheatsheet.md).
 
 ## 1. The method
 
@@ -15,7 +15,7 @@ Optimisation without measurement is superstition. This chapter is the method; th
 
 ## 2. Which query to fix first
 
-A query that takes 5 s once a day matters less than one that takes 20 ms and runs 100 times a second. Rank by **total time** = calls × mean time (`pg_stat_statements.total_exec_time`, ClickHouse `system.query_log`, MongoDB profiler / Atlas performance advisor). Then look at worst-case latency separately.
+A query that takes 5 s once a day matters less than one that takes 20 ms and runs 100 times a second. Rank by **total time** = calls × mean time (`pg_stat_statements.total_exec_time`, ClickHouse `system.query_log`, MongoDB profiler / Atlas performance advisor, Elasticsearch search slow log). Then look at worst-case latency separately.
 
 ## 3. Latency is a distribution
 

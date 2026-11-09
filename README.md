@@ -12,7 +12,7 @@ It is designed to be read **inside [tradar](https://github.com/tuannm99/tradar)*
 | **2a. Engines · PostgreSQL** | storage and MVCC, indexes, planner and `EXPLAIN`, transactions and locking, architecture and replication, tuning playbook | practical → internals → architecture |
 | **2b. Engines · ClickHouse** | MergeTree storage, sparse indexes and pruning, query execution, consistency and mutations, clusters, tuning playbook | |
 | **2c. Engines · MongoDB** | documents and WiredTiger, indexes and `explain`, queries and aggregation, transactions and concerns, replica sets and sharding, tuning playbook | |
-| **2d. Engines · Elasticsearch** | shards and Lucene segments, inverted index and analysis, queries and relevance, writes and consistency, clusters and lifecycle, tuning playbook | |
+| **2d. Engines · Elasticsearch** | shards and Lucene segments, inverted index and analysis, queries and relevance, writes and consistency, clusters and lifecycle, tuning playbook, version differences 5.x → 9.x | |
 | **3. Architecture** | OLTP vs OLAP, replication and consistency, partitioning and sharding, caching and pooling, choosing a database | cross-engine design |
 | **Appendix** | [glossary](appendix/glossary.md), [`.tdb` observability cheatsheet](appendix/tdb-cheatsheet.md), [exercise solutions](appendix/solutions.md) | reference |
 
@@ -33,7 +33,7 @@ Each chapter follows the same shape: **header** (level, prerequisites, what you 
 [2c.1 Storage: WiredTiger](02-engines/mongodb/01-storage-wiredtiger.md) · [2c.2 Indexes](02-engines/mongodb/02-indexes.md) · [2c.3 Queries and aggregation](02-engines/mongodb/03-queries-and-aggregation.md) · [2c.4 Transactions and concerns](02-engines/mongodb/04-transactions-and-concerns.md) · [2c.5 Architecture](02-engines/mongodb/05-architecture.md) · [2c.6 Tuning playbook](02-engines/mongodb/06-tuning-playbook.md)
 
 **2d · Engines: Elasticsearch**
-[2d.1 Storage: Lucene](02-engines/elasticsearch/01-storage-lucene.md) · [2d.2 Indexing and analysis](02-engines/elasticsearch/02-indexing-analysis.md) · [2d.3 Queries and relevance](02-engines/elasticsearch/03-queries-and-relevance.md) · [2d.4 Writes and consistency](02-engines/elasticsearch/04-writes-consistency-concurrency.md) · [2d.5 Clusters and lifecycle](02-engines/elasticsearch/05-architecture-clusters.md) · [2d.6 Tuning playbook](02-engines/elasticsearch/06-tuning-playbook.md)
+[2d.1 Storage: Lucene](02-engines/elasticsearch/01-storage-lucene.md) · [2d.2 Indexing and analysis](02-engines/elasticsearch/02-indexing-analysis.md) · [2d.3 Queries and relevance](02-engines/elasticsearch/03-queries-and-relevance.md) · [2d.4 Writes and consistency](02-engines/elasticsearch/04-writes-consistency-concurrency.md) · [2d.5 Clusters and lifecycle](02-engines/elasticsearch/05-architecture-clusters.md) · [2d.6 Tuning playbook](02-engines/elasticsearch/06-tuning-playbook.md) · [2d.7 Versions 5.x → 9.x](02-engines/elasticsearch/07-versions-5-to-9.md)
 
 **3 · Architecture**
 [3.1 OLTP vs OLAP](03-architecture/01-oltp-vs-olap.md) · [3.2 Replication and consistency](03-architecture/02-replication-and-consistency.md) · [3.3 Partitioning and sharding](03-architecture/03-partitioning-and-sharding.md) · [3.4 Caching and pooling](03-architecture/04-caching-and-pooling.md) · [3.5 Choosing a database](03-architecture/05-choosing-a-database.md)

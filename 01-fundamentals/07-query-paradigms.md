@@ -60,4 +60,6 @@ Put exact constraints (status, ranges, categories) in `filter` and keep `must` f
 1. Write the pipeline for "total `amount` per `status` for orders of the last 30 days" against `playground.play_orders`, then the equivalent SQL for `play_orders`.
 2. When can a `$match` placed after `$group` be moved before it without changing the result, and when not?
 
-Next: [2a.1 PostgreSQL storage and MVCC](../02-engines/postgres/01-storage-and-mvcc.md) (or pick your engine: [2b ClickHouse](../02-engines/clickhouse/01-storage-mergetree.md), [2c MongoDB](../02-engines/mongodb/01-storage-wiredtiger.md)).
+→ Answers: [appendix/solutions.md](../appendix/solutions.md#17-query-paradigms).
+
+Next: [2a.1 PostgreSQL storage and MVCC](../02-engines/postgres/01-storage-and-mvcc.md) (or pick your engine: [2b ClickHouse](../02-engines/clickhouse/01-storage-mergetree.md), [2c MongoDB](../02-engines/mongodb/01-storage-wiredtiger.md), [2d Elasticsearch](../02-engines/elasticsearch/01-storage-lucene.md)).

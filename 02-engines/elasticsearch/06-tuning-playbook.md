@@ -109,4 +109,4 @@ Use the template in [1.6 §7](../../01-fundamentals/06-measuring.md#7-a-reusable
 
 → Answers: [appendix/solutions.md](../../appendix/solutions.md#2d6-elasticsearch-tuning-playbook).
 
-Next part: [3. Architecture](../../03-architecture/01-oltp-vs-olap.md).
+Next: [2d.7 Versions: 5.x to 9.x](07-versions-5-to-9.md).

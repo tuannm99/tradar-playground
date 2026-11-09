@@ -72,12 +72,12 @@ A plan is a tree. Read it **bottom-up, innermost first**: leaves produce rows, p
 
 The same questions apply in every engine; only the vocabulary differs:
 
-| Concept | PostgreSQL | MongoDB | ClickHouse |
-| --- | --- | --- | --- |
-| Get the plan | `EXPLAIN (ANALYZE, BUFFERS)` | `.explain("executionStats")` | `EXPLAIN indexes = 1`, `system.query_log` |
-| Rows touched | `Rows Removed by Filter`, `Buffers` | `totalDocsExamined`, `totalKeysExamined` | `read_rows`, `Granules: a/b` |
-| Rows returned | `actual rows` | `nReturned` | result rows |
-| Full scan marker | `Seq Scan` | `COLLSCAN` | `Granules` ≈ total |
+| Concept | PostgreSQL | MongoDB | ClickHouse | Elasticsearch |
+| --- | --- | --- | --- | --- |
+| Get the plan | `EXPLAIN (ANALYZE, BUFFERS)` | `.explain("executionStats")` | `EXPLAIN indexes = 1`, `system.query_log` | `"profile": true`, search slow log |
+| Rows touched | `Rows Removed by Filter`, `Buffers` | `totalDocsExamined`, `totalKeysExamined` | `read_rows`, `Granules: a/b` | per-query `time_in_nanos`, `hits.total` |
+| Rows returned | `actual rows` | `nReturned` | result rows | `hits.hits` (top `size`) |
+| Full scan marker | `Seq Scan` | `COLLSCAN` | `Granules` ≈ total | `MatchAllDocsQuery`, wildcard/regex expanding many terms |
 
 ## 8. The three classic causes of a bad plan
 

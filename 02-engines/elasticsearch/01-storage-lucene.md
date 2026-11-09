@@ -2,6 +2,8 @@
 
 > **Level:** internals · **Prerequisites:** [1.1](../../01-fundamentals/01-storage.md) · **After this chapter you can:** explain what an index, a shard and a segment are, why a document is not searchable the instant it is written, what refresh, flush, translog and merge each do, and where the bytes of an index actually go. Measured on Elasticsearch 8.15.3 (single node, 1 GB heap) with the [seed](../../README.md#seed-data) (`play_products`, 100 000 documents; `play_logs`, 500 000).
 
+Inheriting an older cluster? What differs between 5.x, 6.x, 7.x and 8.x is in [2d.7](07-versions-5-to-9.md).
+
 ## 1. Index, shard, segment
 
 Elasticsearch is a distributed layer over **Apache Lucene**. The nesting matters for every performance question:
